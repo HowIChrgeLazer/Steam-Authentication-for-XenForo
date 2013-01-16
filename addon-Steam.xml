@@ -463,6 +463,7 @@
     <phrase title="permission_group_SteamAuth" version_id="25" version_string="1.1.1"><![CDATA[Steam Integration]]></phrase>
     <phrase title="permission_interface_SteamAuth" version_id="25" version_string="1.1.1"><![CDATA[Steam Integration]]></phrase>
 	<phrase title="steam_do_not_have_permission" version_id="25" version_string="1.1.1"><![CDATA[You do not have permission to view steam statistics.]]></phrase>
+	<phrase title="checking_out_steam_stats" version_id="25" version_string="1.1.1"><![CDATA[Checking out the Steam Stats page]]></phrase>
   </phrases>
   <route_prefixes>
     <route_type type="admin">

@@ -62,11 +62,8 @@ class Steam_Manufacture {
 
 	protected function _installVersion1() {
 		$db = $this->_getDb();
-
-		// Create the steam auth item
-		try {
-			$db->query("ALTER TABLE xf_user_profile ADD steam_auth_id BIGINT( 20 ) UNSIGNED NOT NULL DEFAULT 0 AFTER facebook_auth_id");
-		} catch(Exception $e) {}
+		
+		self::addColumnIfNotExists('xf_user_profile', 'steam_auth_id', 'BIGINT( 20 ) UNSIGNED NOT NULL DEFAULT 0', 'facebook_auth_id');
 		
 		// Sync external auth in case of previous addons
 		$db->query("UPDATE xf_user_profile p1 JOIN xf_user_external_auth p2 ON(p1.user_id = p2.user_id) SET p1.steam_auth_id = p2.provider_key WHERE provider = 'steam'");
@@ -98,8 +95,9 @@ class Steam_Manufacture {
 	protected function _installVersion8() {
 		$db = $this->_getDb();
 
-		// Add columns to steam user games table
-		$db->query("ALTER TABLE xf_user_steam_games ADD game_hours_recent int unsigned NOT NULL DEFAULT 0 AFTER game_hours");
+		// Add columns to steam user games table		
+		self::addColumnIfNotExists('xf_user_steam_games', 'game_hours_recent', 'INT UNSIGNED NOT NULL DEFAULT 0', 'game_hours');
+		
 		// Run Initial Cron Job for Steam!
 		Steam_Cron::update();
 	}
@@ -129,11 +127,29 @@ class Steam_Manufacture {
 		$db = $this->_getDb();
 
 		// Drop xf_steam_games
-		$db->query("DROP TABLE xf_steam_games");
+		$db->query("DROP TABLE IF EXISTS xf_steam_games");
 		
 		// Drop xf_user_steam_games
-		$db->query("DROP TABLE xf_user_steam_games");
+		$db->query("DROP TABLE IF EXISTS xf_user_steam_games");
 	}
+	
+    public static function addColumnIfNotExists($tableName, $fieldName, $fieldDef, $after)
+    {
+    	$db = XenForo_Application::get('db');
+    
+    	$exists = $db->fetchRow("
+			SHOW COLUMNS
+			FROM {$tableName}
+			WHERE Field = ?
+		", $fieldName);
+    
+    	if (!$exists)
+    	{
+    		$db->query("
+    				ALTER TABLE {$tableName} ADD {$fieldName} {$fieldDef} AFTER {$after}
+    		");
+    	}
+    }	
 
 }
 

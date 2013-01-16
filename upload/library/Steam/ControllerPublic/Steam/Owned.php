@@ -20,4 +20,13 @@ class Steam_ControllerPublic_Steam_Owned extends XenForo_ControllerPublic_Abstra
 		}
 	}
 	
+	/**
+	* Session activity details.
+	* @see XenForo_Controller::getSessionActivityDetailsForList()
+	*/
+	public static function getSessionActivityDetailsForList(array $activities)
+	{
+		return new XenForo_Phrase('checking_out_steam_stats', array('steamUrl' => XenForo_Link::buildPublicLink('steam')));
+	}    		
+	
 }
