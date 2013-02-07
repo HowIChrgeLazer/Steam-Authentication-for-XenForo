@@ -33,6 +33,10 @@ class Steam_Helper_Steam {
         {
             curl_setopt($this->ch, CURLOPT_FOLLOWLOCATION, TRUE);
         }
+        else 
+        {
+        	curl_setopt($this->ch, CURLOPT_HEADER, true);
+        }
 	}	
 
 	public function getUserInfo($steam_id) {
@@ -69,6 +73,22 @@ class Steam_Helper_Steam {
 		curl_setopt($this->ch, CURLOPT_URL, "http://steamcommunity.com/profiles/$steam_id/games/?xml=1");
 		ob_start();
 		$result = curl_exec($this->ch);
+		$http_code = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
+	    if ($http_code == 301 || $http_code == 302) {
+	        list($header) = explode("\r\n\r\n", $result, 2);
+
+	        $matches = array();
+	        preg_match("/(Location:|URI:)[^(\n)]*/", $header, $matches);
+	        $url = trim(str_replace($matches[1], "", $matches[0]));
+
+	        $url_parsed = parse_url($url);
+	        if (isset($url_parsed)) {
+	            curl_setopt($this->ch, CURLOPT_URL, $url);
+	            $result = curl_exec($this->ch);
+	            $pattern = '#HTTP/\d\.\d.*?$.*?\r\n\r\n#ims';
+	            $result = preg_replace($pattern, '', $result);
+	        }
+	    }
 		echo $result;
 		$result = ob_get_clean();
 		$result = trim($result);
@@ -79,6 +99,22 @@ class Steam_Helper_Steam {
 				curl_setopt($this->ch, CURLOPT_URL, "http://steamcommunity.com/profiles/$steam_id/games/?xml=1");
 				ob_start();
 				$result = curl_exec($this->ch);
+				$http_code = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
+			    if ($http_code == 301 || $http_code == 302) {
+			        list($header) = explode("\r\n\r\n", $result, 2);
+
+			        $matches = array();
+			        preg_match("/(Location:|URI:)[^(\n)]*/", $header, $matches);
+			        $url = trim(str_replace($matches[1], "", $matches[0]));
+
+			        $url_parsed = parse_url($url);
+			        if (isset($url_parsed)) {
+			            curl_setopt($this->ch, CURLOPT_URL, $url);
+			            $result = curl_exec($this->ch);
+			            $pattern = '#HTTP/\d\.\d.*?$.*?\r\n\r\n#ims';
+			            $result = preg_replace($pattern, '', $result);
+			        }
+			    }
 				echo $result;
 				$result = ob_get_clean();
 				$result = trim($result);
