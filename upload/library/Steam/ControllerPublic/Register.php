@@ -655,7 +655,7 @@ class Steam_ControllerPublic_Register extends XFCP_Steam_ControllerPublic_Regist
 		}
 
 		// Validate wheather it's true and if we have a good ID
-		preg_match("#^http://steamcommunity.com/openid/id/([0-9]{17,25})#", $_GET['openid_claimed_id'], $matches);
+		preg_match("#^https://steamcommunity.com/openid/id/([0-9]{17,25})#", $_GET['openid_claimed_id'], $matches);
 		$steamID64 = is_numeric($matches[1]) ? $matches[1] : 0;
 
 		// Return our final value
